@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSVES Ops Daily</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── THEMES ── */
+[data-theme="dark"] {
+  --bg:           #0c0e14;
+  --surface:      #13161f;
+  --surface2:     #1a1d2a;
+  --border:       #232636;
+  --border2:      #353a54;
+  --text:         #eaecf8;
+  --text2:        #a0a8c8;
+  --muted:        #4a5070;
+  --muted2:       #6e779a;
+  --shadow:       rgba(0,0,0,.6);
+  --modal-bg:     rgba(0,0,0,.7);
+
+  --green:        #00e676;
+  --green-bg:     rgba(0,230,118,.18);
+  --green-border: rgba(0,230,118,.5);
+  --green-text:   #4dff9f;
+
+  --blue:         #3a6aaa;
+  --blue-bg:      rgba(40,90,170,.28);
+  --blue-border:  rgba(60,110,180,.42);
+  --blue-text:    #6a9fd8;
+
+  --red:          #ff4d4d;
+  --red-bg:       rgba(255,60,60,.14);
+  --red-border:   rgba(255,60,60,.4);
+  --red-text:     #ff7a7a;
+
+  --techline:     #ffcc00;
+  --nowline:      #ff3333;
+  --badge-ts-c:   #ffcc00;
+  --badge-ts-bg:  rgba(255,204,0,.13);
+  --badge-ts-bd:  rgba(255,204,0,.35);
+}
+[data-theme="light"] {
+  --bg:           #f1f3f9;
+  --surface:      #ffffff;
+  --surface2:     #e8ebf4;
+  --border:       #d2d7ea;
+  --border2:      #b4bbd4;
+  --text:         #1a1d2e;
+  --text2:        #484e6e;
+  --muted:        #8a93b4;
+  --muted2:       #6a739a;
+  --shadow:       rgba(0,0,0,.14);
+  --modal-bg:     rgba(0,0,0,.4);
+
+  --green:        #009940;
+  --green-bg:     rgba(0,160,60,.1);
+  --green-border: rgba(0,160,60,.4);
+  --green-text:   #007030;
+
+  --blue:         #2a5fa0;
+  --blue-bg:      rgba(30,80,180,.09);
+  --blue-border:  rgba(30,80,180,.3);
+  --blue-text:    #1a4a80;
+
+  --red:          #cc2020;
+  --red-bg:       rgba(200,20,20,.08);
+  --red-border:   rgba(200,20,20,.3);
+  --red-text:     #aa1010;
+
+  --techline:     #c07800;
+  --nowline:      #dd2020;
+  --badge-ts-c:   #a06000;
+  --badge-ts-bg:  rgba(180,120,0,.1);
+  --badge-ts-bd:  rgba(180,120,0,.32);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;min-height:100vh;transition:background .2s,color .2s;}
+
+/* ── HEADER ── */
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px 10px;border-bottom:1px solid var(--border);
+  background:var(--bg);position:sticky;top:0;z-index:300;transition:background .2s;
+}
+.brand{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.14em;color:var(--green);text-transform:uppercase;}
+.hdr-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);margin-left:14px;}
+.theme-btn{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.07em;
+  padding:5px 12px;border-radius:20px;cursor:pointer;
+  border:1px solid var(--border2);background:var(--surface2);color:var(--text2);transition:all .15s;
+}
+.theme-btn:hover{border-color:var(--green);color:var(--green);}
+
+/* ── VIEW SWITCH ── */
+.view-switch{
+  display:flex;align-items:center;gap:0;
+  border:1px solid var(--border2);border-radius:20px;overflow:hidden;background:var(--surface2);
+}
+.vs-btn{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.07em;
+  padding:5px 14px;cursor:pointer;border:none;background:transparent;
+  color:var(--muted2);transition:all .15s;white-space:nowrap;
+}
+.vs-btn.active{
+  background:var(--surface);color:var(--text);
+  box-shadow:inset 0 0 0 1px var(--border2);
+}
+.vs-btn.active.vs-tech{ color:var(--green-text); background:var(--green-bg); }
+.vs-btn.active.vs-ops { color:var(--blue-text);  background:var(--blue-bg);  }
+.vs-btn.active.vs-all { color:var(--text);        background:var(--surface);  }
+.hdr-right{display:flex;align-items:center;gap:8px;}
+
+/* ── DROP ZONE ── */
+.drop-zone{
+  margin:14px 20px 0;border:1.5px dashed var(--border2);border-radius:8px;
+  padding:14px 20px;display:flex;align-items:center;gap:14px;
+  background:var(--surface);cursor:pointer;transition:all .2s;
+}
+.drop-zone.drag-over{border-color:var(--green);background:rgba(0,230,118,.04);}
+.drop-zone.has-file{border-color:var(--green);border-style:solid;}
+.drop-icon{font-size:20px;flex-shrink:0;}
+.drop-text{flex:1;}
+.drop-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:.06em;}
+.drop-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+.drop-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.parse-btn{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.07em;
+  padding:6px 16px;border-radius:4px;cursor:pointer;border:none;
+  background:var(--green);color:#000;font-weight:600;transition:opacity .15s;display:none;
+}
+.parse-btn:hover{opacity:.82;}
+.parse-btn:disabled{opacity:.4;cursor:not-allowed;}
+.clear-btn{
+  font-family:'DM Mono',monospace;font-size:11px;padding:5px 10px;border-radius:4px;cursor:pointer;
+  border:1px solid var(--border2);background:transparent;color:var(--muted2);display:none;transition:all .15s;
+}
+.clear-btn:hover{border-color:var(--red);color:var(--red);}
+.parse-status{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);padding:5px 20px 0;min-height:18px;}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:80px 20px;text-align:center;gap:12px;
+}
+.empty-icon{font-size:40px;opacity:.3;}
+.empty-label{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
+.empty-sub{font-size:11px;color:var(--muted);max-width:280px;line-height:1.6;}
+
+/* ── LEGEND ── */
+.legend{display:flex;gap:16px;flex-wrap:wrap;padding:12px 20px 0;}
+.li{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);}
+.ld{width:8px;height:8px;border-radius:2px;}
+
+/* ── TIMELINE ── */
+.tl-wrap{padding:14px 20px 0;overflow-x:auto;}
+.tl-header-row{
+  display:flex;align-items:baseline;justify-content:space-between;
+  margin-bottom:10px;
+}
+.tl-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
+.tl-grid{position:relative;min-width:860px;}
+.tl-hours{display:grid;grid-template-columns:150px repeat(16,1fr);margin-bottom:2px;}
+.tl-hlabel{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-align:center;padding-bottom:6px;border-right:1px solid var(--border);}
+.tl-hlabel:first-child{border-right:none;}
+.tl-row{display:grid;grid-template-columns:150px 1fr;border-top:1px solid var(--border);min-height:34px;}
+.tl-rlabel{font-size:10px;color:var(--muted2);padding:6px 8px;border-right:1px solid var(--border);display:flex;align-items:center;line-height:1.3;}
+.tl-cells{position:relative;display:grid;grid-template-columns:repeat(16,1fr);}
+.tl-cell{border-right:1px solid rgba(100,110,160,.1);}
+.tl-cell:last-child{border-right:none;}
+
+/* timeline events */
+.tl-evt{
+  position:absolute;top:4px;bottom:4px;border-radius:3px;
+  padding:0 7px;display:flex;align-items:center;
+  font-size:9px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  cursor:default;z-index:2;transition:filter .1s,transform .1s,opacity .15s;
+}
+.tl-evt:hover{filter:brightness(1.2);transform:scaleY(1.07);z-index:6;}
+.tl-evt.c-tech  {background:var(--green-bg);color:var(--green-text);border:1px solid var(--green-border);}
+.tl-evt.c-notech{background:var(--blue-bg); color:var(--blue-text); border:1px solid var(--blue-border);}
+.tl-evt.tl-dimmed{opacity:.15;filter:grayscale(1);background:var(--surface2)!important;border-color:var(--border)!important;color:var(--muted)!important;}
+
+/* tech-start line */
+.tl-techline{
+  position:absolute;top:0;bottom:0;width:2px;
+  background:var(--techline);z-index:4;pointer-events:none;opacity:.9;
+}
+.tl-techline::after{
+  content:'';position:absolute;top:-4px;left:-3px;
+  width:8px;height:8px;border-radius:50%;background:var(--techline);
+}
+
+/* now line — pushed down to avoid clashing with header text */
+.now-line{
+  position:absolute;bottom:0;width:1px;
+  background:var(--nowline);z-index:20;pointer-events:none;
+  display:none;
+  top:18px; /* clear the column label row */
+}
+.now-label{
+  position:absolute;top:-16px;left:150px;
+  font-family:'DM Mono',monospace;font-size:8px;color:var(--nowline);
+  letter-spacing:.04em;pointer-events:none;display:none;white-space:nowrap;
+  transform:translateX(-50%);text-align:center;
+}
+/* pulsating ball at top of now-line */
+.now-ball{
+  position:absolute;top:0;left:50%;transform:translate(-50%,-50%);
+  width:8px;height:8px;border-radius:50%;
+  background:var(--nowline);
+  box-shadow:0 0 0 0 rgba(255,51,51,.7);
+  animation:nowpulse 2s ease-in-out infinite;
+}
+@keyframes nowpulse{
+  0%  { box-shadow:0 0 0 0 rgba(255,51,51,.7); }
+  60% { box-shadow:0 0 0 7px rgba(255,51,51,0); }
+  100%{ box-shadow:0 0 0 0 rgba(255,51,51,0); }
+}
+
+.scroll-hint{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-align:right;padding:4px 20px 2px;}
+
+/* ── HOVER TOOLTIP ── */
+.tooltip{
+  position:fixed;z-index:500;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:8px;padding:12px 14px;max-width:300px;min-width:200px;
+  box-shadow:0 8px 32px var(--shadow);
+  pointer-events:none;opacity:0;transition:opacity .15s;
+}
+.tooltip.show{opacity:1;}
+.tt-room{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px;}
+.tt-time{font-family:'DM Mono',monospace;font-size:14px;font-weight:300;color:var(--text);margin-bottom:3px;}
+.tt-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.3;}
+.tt-tag{display:inline-flex;align-items:center;gap:4px;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;padding:2px 7px;border-radius:2px;border:1px solid;line-height:1.5;margin:2px 2px 0 0;}
+.tt-tag.g{color:var(--green-text);border-color:var(--green-border);background:var(--green-bg);}
+.tt-tag.b{color:var(--blue-text); border-color:var(--blue-border); background:var(--blue-bg);}
+.tt-tag.r{color:var(--red-text);  border-color:var(--red-border);  background:var(--red-bg);}
+.tt-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:9px;color:var(--badge-ts-c);background:var(--badge-ts-bg);border:1px solid var(--badge-ts-bd);border-radius:2px;padding:2px 6px;margin-bottom:6px;}
+.tt-notech{font-size:10px;color:var(--muted);font-style:italic;}
+
+/* ── CARDS ── */
+.cards-wrap{padding:16px 20px 30px;}
+.cards-hdr{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;animation:up .22s ease both;transition:border-color .15s,box-shadow .15s;
+}
+.card:hover{border-color:var(--border2);box-shadow:0 4px 20px var(--shadow);}
+@keyframes up{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+.card-room{
+  padding:10px 14px 8px;border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:14px;font-weight:500;
+  letter-spacing:.04em;color:var(--text2);
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+}
+.ts-badge{
+  font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:.06em;
+  color:var(--badge-ts-c);background:var(--badge-ts-bg);border:1px solid var(--badge-ts-bd);
+  border-radius:3px;padding:2px 7px;white-space:nowrap;flex-shrink:0;
+}
+
+.evt{padding:12px 14px;border-bottom:1px solid var(--border);}
+.evt:last-child{border-bottom:none;}
+.evt-time{font-family:'DM Mono',monospace;font-size:20px;font-weight:300;color:var(--text);letter-spacing:-.01em;line-height:1;margin-bottom:5px;}
+.evt-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.35;margin-bottom:3px;}
+.evt-type{font-size:10px;color:var(--muted2);font-style:italic;margin-bottom:8px;}
+
+.dept-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-top:9px;margin-bottom:4px;}
+.tags{display:flex;flex-wrap:wrap;gap:5px;}
+
+/* Equipment tags — green for tech, blue for nontech, red for labor */
+.tag{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;padding:4px 9px;border-radius:3px;border:1px solid;line-height:1.5;letter-spacing:.02em;}
+.tag.tg{color:var(--green-text);border-color:var(--green-border);background:var(--green-bg);}
+.tag.tb{color:var(--blue-text); border-color:var(--blue-border); background:var(--blue-bg);}
+.tag.tr{color:var(--red-text);  border-color:var(--red-border);  background:var(--red-bg);}
+.tag.tgray{color:var(--muted2); border-color:var(--border2);     background:transparent;}
+
+/* Notes and food — gray, bottom of card */
+.side-notes{margin-top:10px;border-top:1px solid var(--border);padding-top:8px;}
+.side-note{font-size:10px;color:var(--muted2);line-height:1.6;padding:4px 0;}
+.side-note+.side-note{border-top:1px solid var(--border);}
+
+/* view filtering */
+.card.hide-card{display:none;}
+
+/* food emoji badge */
+.food-emoji{font-size:14px;float:right;margin-left:6px;line-height:1;opacity:.85;}
+
+/* no-needs labels */
+.no-needs-label{
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.07em;
+  color:var(--muted);border:1px solid var(--border);border-radius:3px;
+  padding:2px 7px;display:inline-block;margin-top:6px;
+}
+
+/* ── USER NOTES ── */
+.notes-section{
+  margin:0 20px 40px;border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;background:var(--surface);
+}
+.notes-hdr{
+  padding:10px 14px 8px;border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
+  letter-spacing:.06em;color:var(--muted2);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.notes-saved{font-size:9px;color:var(--muted);font-weight:400;letter-spacing:.04em;}
+.notes-textarea{
+  width:100%;min-height:100px;padding:12px 14px;
+  background:transparent;border:none;outline:none;resize:vertical;
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.7;
+}
+.notes-textarea::placeholder{color:var(--muted);}
+
+/* utility */
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div style="display:flex;align-items:baseline;">
+    <span class="brand">OSVES OPS</span>
+    <span class="hdr-date" id="hdr-date"></span>
+  </div>
+  <div class="hdr-right">
+    <div class="view-switch" id="view-switch">
+      <button class="vs-btn vs-all active" id="vs-all"  onclick="setView('all')">ALL</button>
+      <button class="vs-btn vs-tech"       id="vs-tech" onclick="setView('tech')">⚙ TECH</button>
+      <button class="vs-btn vs-ops"        id="vs-ops"  onclick="setView('ops')">🪑 OPS</button>
+    </div>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">☀ LIGHT</button>
+  </div>
+</div>
+
+<!-- DROP ZONE -->
+<div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+  <input type="file" id="file-input" accept=".pdf" style="display:none" onchange="onFileSelect(event)">
+  <div class="drop-icon">📄</div>
+  <div class="drop-text">
+    <div class="drop-label" id="drop-label">DROP PDF</div>
+    <div class="drop-sub"   id="drop-sub">Momentus Elite daily export</div>
+  </div>
+  <div class="drop-right">
+    <button class="parse-btn" id="parse-btn" onclick="handleBuild(event)">⚡ BUILD</button>
+    <button class="clear-btn" id="clear-btn" onclick="clearFile(event)">✕</button>
+  </div>
+</div>
+<div class="parse-status" id="parse-status"></div>
+
+<!-- EMPTY STATE (shown until PDF loaded) -->
+<div class="empty-state" id="empty-state">
+  <div class="empty-icon">🗓</div>
+  <div class="empty-label">No schedule loaded</div>
+  <div class="empty-sub">Drop a Momentus Elite daily export PDF above to build today's schedule.</div>
+</div>
+
+<!-- SCHEDULE (hidden until loaded) -->
+<div id="schedule-wrap" class="hidden">
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="li"><div class="ld" style="background:var(--green)"></div>TECH</div>
+    <div class="li"><div class="ld" style="background:var(--blue)"></div>NO TECH</div>
+    <div class="li"><div class="ld" style="background:var(--techline);border-radius:50%"></div>TECH START</div>
+    <div class="li"><div class="ld" style="background:var(--nowline)"></div>NOW</div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="tl-wrap">
+    <div class="tl-header-row">
+      <div style="position:relative;">
+        <div class="tl-title">TIMELINE 7 AM – 11 PM</div>
+        <!-- NOW label sits here, positioned absolutely relative to grid -->
+      </div>
+    </div>
+    <div class="tl-grid" id="tl-grid">
+      <div class="tl-hours" id="tl-hours">
+        <div class="tl-hlabel"></div>
+        <div class="tl-hlabel">7A</div><div class="tl-hlabel">8A</div><div class="tl-hlabel">9A</div>
+        <div class="tl-hlabel">10A</div><div class="tl-hlabel">11A</div><div class="tl-hlabel">12P</div>
+        <div class="tl-hlabel">1P</div><div class="tl-hlabel">2P</div><div class="tl-hlabel">3P</div>
+        <div class="tl-hlabel">4P</div><div class="tl-hlabel">5P</div><div class="tl-hlabel">6P</div>
+        <div class="tl-hlabel">7P</div><div class="tl-hlabel">8P</div><div class="tl-hlabel">9P</div>
+        <div class="tl-hlabel">10P</div>
+      </div>
+      <div id="tl-rows"></div>
+      <div class="now-line"  id="now-line"></div>
+      <div class="now-label" id="now-label"></div>
+    </div>
+  </div>
+  <div class="scroll-hint">← scroll →</div>
+
+  <!-- CARDS -->
+  <div class="cards-wrap">
+    <div class="cards-hdr">ALL EVENTS — SORTED BY START TIME</div>
+    <div class="grid" id="card-grid"></div>
+  </div>
+
+  <!-- USER NOTES -->
+  <div class="notes-section">
+    <div class="notes-hdr">
+      <span>NOTES</span>
+      <span class="notes-saved" id="notes-saved"></span>
+    </div>
+    <textarea class="notes-textarea" id="notes-textarea" placeholder="Type notes for today…"></textarea>
+  </div>
+
+</div><!-- /schedule-wrap -->
+
+<!-- HOVER TOOLTIP -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+/* ═══════════════════════════════
+   THEME
+═══════════════════════════════ */
+function toggleTheme() {
+  const html = document.documentElement;
+  const dark = html.getAttribute('data-theme') === 'dark';
+  const next = dark ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  document.getElementById('theme-btn').textContent = dark ? '🌙 DARK' : '☀ LIGHT';
+  localStorage.setItem('osves_theme', next);
+}
+// Restore theme on load
+(function restoreTheme() {
+  const saved = localStorage.getItem('osves_theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀ LIGHT' : '🌙 DARK';
+  }
+})();
+
+/* ═══════════════════════════════
+   VIEW SWITCH (Tech / Ops / All)
+═══════════════════════════════ */
+let currentView = localStorage.getItem('osves_view') || 'all';
+function setView(v) {
+  currentView = v;
+  localStorage.setItem('osves_view', v);
+  ['all','tech','ops'].forEach(id => {
+    const btn = document.getElementById('vs-' + id);
+    btn.classList.toggle('active', id === v);
+  });
+  filterCards();
+}
+// Restore view on load
+(function restoreView() {
+  const btn = document.getElementById('vs-' + currentView);
+  if (btn) { ['all','tech','ops'].forEach(id => document.getElementById('vs-'+id).classList.toggle('active', id === currentView)); }
+})();
+function filterCards() {
+  document.querySelectorAll('.card[data-has-tech]').forEach(card => {
+    const hasTech    = card.dataset.hasTech    === '1';
+    const hasNontech = card.dataset.hasNontech === '1';
+    let hide = false;
+    if (currentView === 'tech' && !hasTech)    hide = true;
+    if (currentView === 'ops'  && !hasNontech) hide = true;
+    card.classList.toggle('hide-card', hide);
+  });
+  // Also dim unrelated timeline events
+  document.querySelectorAll('.tl-evt').forEach(el => {
+    const hasTech    = el.dataset.hasTech    === '1';
+    const hasNontech = el.dataset.hasNontech === '1';
+    let dim = false;
+    if (currentView === 'tech' && !hasTech)    dim = true;
+    if (currentView === 'ops'  && !hasNontech) dim = true;
+    el.classList.toggle('tl-dimmed', dim);
+  });
+}
+
+/* ═══════════════════════════════
+   NOTES — localStorage
+═══════════════════════════════ */
+const notesTA  = document.getElementById('notes-textarea');
+const notesSaved = document.getElementById('notes-saved');
+const NOTES_KEY = 'osves_notes';
+
+function loadNotes() {
+  const saved = localStorage.getItem(NOTES_KEY);
+  if (saved) notesTA.value = saved;
+}
+function saveNotes() {
+  localStorage.setItem(NOTES_KEY, notesTA.value);
+  notesSaved.textContent = 'SAVED ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+notesTA.addEventListener('input', () => {
+  clearTimeout(notesTA._t);
+  notesTA._t = setTimeout(saveNotes, 800);
+});
+loadNotes();
+
+/* ═══════════════════════════════
+   TIME HELPERS
+═══════════════════════════════ */
+const TL_START = 7;  // 7 AM
+const TL_HOURS = 16; // 7 AM → 11 PM
+
+function fmtH(h) {
+  const hr  = Math.floor(h);
+  const min = Math.round((h - hr) * 60);
+  const ap  = hr < 12 ? 'AM' : 'PM';
+  const d   = hr > 12 ? hr - 12 : (hr === 0 ? 12 : hr);
+  return d + (min ? ':' + String(min).padStart(2, '0') : '') + ' ' + ap;
+}
+function fmtRange(s, e) { return fmtH(s) + ' – ' + fmtH(e); }
+function tlLeft(h)  { return ((h - TL_START) / TL_HOURS) * 100; }
+function tlWidth(s, e) { return ((e - s) / TL_HOURS) * 100; }
+
+/* ═══════════════════════════════
+   PDF DROP ZONE
+═══════════════════════════════ */
+let pdfFile = null;
+const dropZone  = document.getElementById('drop-zone');
+const parseBtn  = document.getElementById('parse-btn');
+const clearBtn  = document.getElementById('clear-btn');
+const statusEl  = document.getElementById('parse-status');
+
+dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', ()  => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type === 'application/pdf') setFile(f);
+});
+function onFileSelect(e) { const f = e.target.files[0]; if (f) setFile(f); }
+
+function setFile(f) {
+  pdfFile = f;
+  dropZone.classList.add('has-file');
+  document.getElementById('drop-label').textContent = f.name;
+  document.getElementById('drop-sub').textContent = (f.size / 1024).toFixed(0) + ' KB — ready';
+  parseBtn.style.display = 'inline-block';
+  clearBtn.style.display = 'inline-block';
+  statusEl.textContent = '';
+}
+function clearFile(e) {
+  e.stopPropagation();
+  pdfFile = null;
+  dropZone.classList.remove('has-file');
+  document.getElementById('drop-label').textContent = 'DROP PDF';
+  document.getElementById('drop-sub').textContent   = 'Momentus Elite daily export';
+  parseBtn.style.display = 'none';
+  clearBtn.style.display = 'none';
+  statusEl.textContent   = '';
+  document.getElementById('file-input').value = '';
+}
+
+/* ═══════════════════════════════
+   PDF.js TEXT EXTRACTION
+═══════════════════════════════ */
+async function loadPDFJS() {
+  if (window.pdfjsLib) return;
+  await new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+async function extractPDFText(file) {
+  await loadPDFJS();
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  const pages = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page    = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    // Preserve spatial grouping by joining items with spaces, lines with newlines
+    let lineText = '';
+    let lastY    = null;
+    content.items.forEach(item => {
+      if (lastY !== null && Math.abs(item.transform[5] - lastY) > 3) {
+        lineText += '\n';
+      }
+      lineText += item.str + ' ';
+      lastY = item.transform[5];
+    });
+    pages.push(lineText.trim());
+  }
+  return pages.join('\n---PAGE---\n');
+}
+
+/* ═══════════════════════════════
+   NATIVE PARSER
+   Parses Momentus Elite daily ops PDF text into structured event data.
+   Rules are written to handle the known format while being resilient
+   to new rooms, new equipment items, and new event types.
+═══════════════════════════════ */
+function parseTimeString(raw) {
+  // e.g. "10 - 11 AM", "5 - 8 PM", "8 AM - 12:30 PM", "10 AM - 12 PM", "5:30 - 8 PM"
+  // Normalise
+  const s = raw.replace(/\s+/g, ' ').trim();
+  const m = s.match(/(\d+(?::\d+)?)\s*(?:AM|PM)?\s*[-–]\s*(\d+(?::\d+)?)\s*(AM|PM)/i);
+  if (!m) return null;
+
+  function toH(numStr, ampm) {
+    const parts = numStr.split(':');
+    let h = parseInt(parts[0]);
+    const min = parts[1] ? parseInt(parts[1]) : 0;
+    if (ampm.toUpperCase() === 'PM' && h < 12) h += 12;
+    if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
+    return h + min / 60;
+  }
+
+  const endAMPM = m[3];
+  // Infer start AMPM: if start hour >= end hour numerically and end is PM, start is probably AM
+  // Also pull explicit AM/PM from the raw string if present before the dash
+  const startAMPMMatch = s.match(/(\d+(?::\d+)?)\s*(AM|PM)/i);
+  const startAMPM = startAMPMMatch ? startAMPMMatch[2] : endAMPM;
+
+  let startH = toH(m[1], startAMPM);
+  const endH = toH(m[2], endAMPM);
+
+  // Sanity: if start > end, flip start AMPM
+  if (startH > endH) {
+    startH = toH(m[1], startAMPM === 'AM' ? 'PM' : 'AM');
+  }
+  return { startH, endH };
+}
+
+function parseDateString(raw) {
+  // e.g. "Mar 30, 2026" or "3/30/26"
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const m1 = raw.match(/(\w{3})\s+(\d+),?\s*(\d{4})/);
+  if (m1) {
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const d = new Date(`${m1[1]} ${m1[2]} ${m1[3]}`);
+    if (!isNaN(d)) {
+      return `${days[d.getDay()].toUpperCase()} · ${m1[1].toUpperCase()} ${m1[2]}, ${m1[3]}`;
+    }
+  }
+  const m2 = raw.match(/(\d+)\/(\d+)\/(\d+)/);
+  if (m2) {
+    const fullYear = m2[3].length === 2 ? '20' + m2[3] : m2[3];
+    const d = new Date(`${fullYear}-${String(m2[1]).padStart(2,'0')}-${String(m2[2]).padStart(2,'0')}`);
+    if (!isNaN(d)) {
+      const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+      return `${days[d.getDay()]} · ${months[d.getMonth()-1]?.toUpperCase() || m2[1]} ${m2[2]}, ${fullYear}`;
+    }
+  }
+  return '';
+}
+
+// Department section headers we recognise
+const DEPT_AUDIO    = /^AUDIO DEPARTMENT$/i;
+const DEPT_VIDEO    = /^VIDEO DEPARTMENT$/i;
+const DEPT_AVLABOR  = /^AUDIO LABOR$|^VIDEO LABOR$|^AV LABOR$/i;
+const DEPT_NONTECH  = /^NON-TECHNICAL DEPARTMENT$/i;
+const DEPT_FOOD     = /^FOOD & BEVERAGE$|^FOOD AND BEVERAGE$/i;
+const DEPT_GENTECH  = /^GENERAL TECH DEPARTMENT$/i;
+const DEPT_GENINSTR = /^GENERAL INSTRUCTIONS$/i;
+
+// Sub-headers within a department that we skip
+const SUB_HEADERS = /^(Audio Equipment|Video Equipment|Audio Labor|Video Labor|AV Labor|Non-Technical Furniture|Non-Technical Instructions|Non-Technical Labor|General Tech Equipment|General Tech Instructions|General Instructions|Food & Beverage Instructions|Sodexo|Booking Notes|FOAPAL|PLANNING|READY)$/i;
+
+// Lines that indicate "no needs" — skip them
+const NO_NEEDS = /no\s+(ops|production|tech|technical|osves|non-tech|equipment|furniture)\s+needs?|no\s+osves\s+needed?|client\s+bringing|production\/tech\s+not\s+needed|empty\s+room/i;
+
+// Line that looks like an event header:
+// "MAR 30, 2026, 10 - 11 AM • EVENT NAME • SERIES NAME • TYPE"
+const EVENT_HDR = /^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+\d+,\s*\d{4},?\s+(.+?AM|.+?PM)\s*[•·]\s*(.+)/i;
+
+// Room header: all-caps line, not an event or dept header
+// We detect it as a line that is not an event header, not a dept, and appears in ALL CAPS or Title Case with no time range
+const ROOM_HDR = /^[A-Z][A-Z0-9 \-&'\.\/]+$/;
+
+function isRoomLine(line) {
+  if (EVENT_HDR.test(line)) return false;
+  if (DEPT_AUDIO.test(line) || DEPT_VIDEO.test(line) || DEPT_NONTECH.test(line) ||
+      DEPT_FOOD.test(line) || DEPT_GENTECH.test(line) || DEPT_GENINSTR.test(line) ||
+      DEPT_AVLABOR.test(line)) return false;
+  if (SUB_HEADERS.test(line)) return false;
+  if (/^\d+\/\d+\/\d+/.test(line)) return false; // date
+  // Reject known false-positive single words
+  if (/^(EVENT|ROOM|DATE|NOTES?|LAYOUT|RESERVATION|DIAGRAM|STATUS|DETAILS?|PLANNING|READY|ADMINISTRATIVE)$/i.test(line.trim())) return false;
+  // Must look like a room: mostly caps, reasonable length, must contain at least one space OR be a proper room code
+  const t = line.trim();
+  // Must have at least 2 words OR look like a room code with numbers (e.g. "SALON A", "BALLROOM 1")
+  const wordCount = t.split(/\s+/).length;
+  if (wordCount < 2 && !/\d/.test(t)) return false;
+  return ROOM_HDR.test(t) && t.length > 3 && t.length < 80;
+}
+
+function cleanItem(line) {
+  // Remove trailing "• N Each | Standard" etc
+  return line
+    .replace(/\s*[•·]\s*\d+\s*(Each|Person|Event|Hour)\s*\*?\s*\d*\s*(Hours?)?\s*\|\s*\w+\s*/gi, '')
+    .replace(/\s*\|\s*(Standard|Custom)\s*/gi, '')
+    .trim();
+}
+
+function parseMomentusText(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+
+  let dateStr = '';
+  // Try to find date on first couple lines
+  for (let i = 0; i < Math.min(10, lines.length); i++) {
+    const d = parseDateString(lines[i]);
+    if (d) { dateStr = d; break; }
+  }
+
+  const events = [];
+  let currentRoom = null;
+  let currentEvent = null;
+  let currentDept = null; // 'audio','video','avlabor','nontech','food','gentech','geninstr'
+
+  function finalizeEvent() {
+    if (currentEvent) {
+      currentEvent.hasTech = currentEvent.audio.length > 0 || currentEvent.video.length > 0;
+      events.push(currentEvent);
+    }
+    currentEvent = null;
+    currentDept  = null;
+  }
+
+  function newEvent(room, name, type, startH, endH) {
+    finalizeEvent();
+    currentEvent = { room, name, type, startH, endH, audio:[], video:[], avLabor:[], nontech:[], food:[], notes:[], hasTech:false, hasFood:false };
+    currentDept = null;
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line) continue;
+
+    // Skip page breaks and date stamps
+    if (/^---PAGE---/.test(line)) continue;
+    if (/^\d+\/\d+\/\d+,\s*\d+:\d+\s*(AM|PM)/.test(line)) continue; // timestamp
+    if (/^\d+\/\d+$/.test(line)) continue; // page number
+
+    // Detect date
+    if (!dateStr) { const d = parseDateString(line); if (d) dateStr = d; }
+
+    // Skip EVENT WIDE section (administrative)
+    if (/^EVENT WIDE$/i.test(line)) { currentDept = 'skip'; continue; }
+    if (currentDept === 'skip') {
+      // end skip when we hit a real room line
+      if (isRoomLine(line)) currentDept = null;
+      else continue;
+    }
+
+    // Event header line
+    const evMatch = line.match(/^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+\d+,\s*\d{4},?\s+(.+?(?:AM|PM))\s*[•·]\s*(.+)/i);
+    if (evMatch) {
+      const timeRaw = evMatch[2];
+      const rest    = evMatch[3];
+      const parts   = rest.split(/\s*[•·]\s*/);
+      const evName  = parts[0]?.trim() || '';
+      // last part is often the type (MAIN EVENT, REHEARSAL, etc.)
+      const evType  = parts[parts.length - 1]?.trim() || '';
+      const times   = parseTimeString(timeRaw);
+      if (times && currentRoom && evName) {
+        // Skip obviously administrative-only events (no room context)
+        if (!/^(FOAPAL|KEY LEADER|ADMINISTRATIVE)/i.test(evName)) {
+          newEvent(currentRoom, evName, evType !== evName ? evType : '', times.startH, times.endH);
+        }
+      }
+      continue;
+    }
+
+    // Room header
+    if (isRoomLine(line)) {
+      // Don't finalize event here — room can span multiple events
+      currentRoom = line.trim();
+      continue;
+    }
+
+    // Department headers
+    if (DEPT_AUDIO.test(line))   { currentDept = 'audio';   continue; }
+    if (DEPT_VIDEO.test(line))   { currentDept = 'video';   continue; }
+    if (DEPT_AVLABOR.test(line)) { currentDept = 'avlabor'; continue; }
+    if (DEPT_NONTECH.test(line)) { currentDept = 'nontech'; continue; }
+    if (DEPT_FOOD.test(line))    { currentDept = 'food';    continue; }
+    if (DEPT_GENTECH.test(line)) { currentDept = 'gentech'; continue; }
+    if (DEPT_GENINSTR.test(line)){ currentDept = 'geninstr';continue; }
+
+    // Sub-headers: just skip
+    if (SUB_HEADERS.test(line)) continue;
+
+    // "No needs" lines: skip
+    if (NO_NEEDS.test(line)) continue;
+
+    // Bill / billing lines: just flag food present
+    if (/bill to client|sodexo billing/i.test(line)) {
+      if (currentEvent) currentEvent.hasFood = true;
+      continue;
+    }
+
+    // Ignore pure status words
+    if (/^(PLANNING|READY|ADMINISTRATIVE|REHEARSAL|MAIN EVENT|PRACTICE|MEETING|MEAL|RECEPTION|LOBBY)$/i.test(line)) continue;
+
+    // If we have no current event yet, skip content lines
+    if (!currentEvent) continue;
+
+    // Now assign line to correct bucket based on currentDept
+    const cleaned = cleanItem(line);
+    if (!cleaned || cleaned.length < 2) continue;
+
+    switch (currentDept) {
+      case 'audio':
+        // Distinguish equipment from notes
+        if (/microphone|mic|speaker|wireless|handheld|lav|podium|monitor|console|mixer|DI|direct box|PA|system|audix|shure|sennheiser|cable|stand|boom/i.test(cleaned)) {
+          currentEvent.audio.push(cleaned);
+        } else if (cleaned.length > 8 && /osves|set|strike|standard|custom|crew|a1|a2|v1|v2|wireless|patch|channel|cue|advance|lectern/i.test(cleaned)) {
+          currentEvent.notes.push(cleaned);
+        }
+        break;
+      case 'video':
+        if (/projector|screen|display|flatscreen|LED|monitor|HDMI|presentation|laptop|computer|PC|camera|switcher|system|cable|scaler/i.test(cleaned)) {
+          currentEvent.video.push(cleaned);
+        } else if (cleaned.length > 8 && /osves|set|strike|standard|custom|crew|v1|v2|program|cue|advance/i.test(cleaned)) {
+          currentEvent.notes.push(cleaned);
+        }
+        break;
+      case 'avlabor':
+        currentEvent.avLabor.push(cleaned);
+        break;
+      case 'nontech':
+        if (/table|chair|staging|stage|deck|stair|riser|podium|easel|pipe|drape|linen|cart|stand|furniture|barricade|barrier|fence|tent|flag/i.test(cleaned)) {
+          currentEvent.nontech.push(cleaned);
+        } else if (cleaned.length > 8 && /osves|set|strike|standard|custom|classroom|theater|banquet|rounds|chevron|u-shape|crescent|reception style|hollow square|see layout/i.test(cleaned)) {
+          currentEvent.notes.push(cleaned);
+        }
+        break;
+      case 'food':
+        // Just mark that food is present — don't show catering details
+        currentEvent.hasFood = true;
+        break;
+      case 'gentech':
+        if (/extension|cord|cable|power|outlet|strip|ethernet|internet|wifi|network/i.test(cleaned)) {
+          currentEvent.nontech.push(cleaned);
+        } else if (cleaned.length > 8 && /osves|set|strike|standard|custom/i.test(cleaned)) {
+          currentEvent.notes.push(cleaned);
+        }
+        break;
+      case 'geninstr':
+        if (cleaned.length > 8 && /osves|set|strike|standard|custom|crew|tech start|load|rig|patch|program|cue|advance|lectern|wireless|channel/i.test(cleaned)) {
+          currentEvent.notes.push(cleaned);
+        }
+        break;
+      default:
+        if (cleaned.length > 8 && /osves|set|strike|standard|custom|crew|tech start|load/i.test(cleaned)) {
+          currentEvent.notes.push(cleaned);
+        }
+    }
+  }
+  finalizeEvent();
+
+  // Filter out any events that have no name or no valid times
+  const valid = events.filter(e => e.name && e.startH != null && e.endH != null && e.startH < e.endH);
+
+  return { date: dateStr, events: valid };
+}
+
+/* ═══════════════════════════════
+   BUILD HANDLER
+═══════════════════════════════ */
+async function handleBuild(e) {
+  e.stopPropagation();
+  if (!pdfFile) return;
+  parseBtn.disabled = true;
+  statusEl.textContent = 'Reading PDF…';
+
+  try {
+    const text   = await extractPDFText(pdfFile);
+    statusEl.textContent = 'Parsing…';
+    const result = parseMomentusText(text);
+
+    if (!result.events.length) {
+      statusEl.textContent = '⚠ No events found — check PDF format';
+      parseBtn.disabled = false;
+      return;
+    }
+
+    document.getElementById('hdr-date').textContent = result.date || '';
+    statusEl.textContent = `✓ ${result.events.length} events loaded`;
+
+    document.getElementById('empty-state').classList.add('hidden');
+    document.getElementById('schedule-wrap').classList.remove('hidden');
+
+    renderTimeline(result.events);
+    renderCards(result.events);
+    positionNowLine();
+
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = '✗ ' + (err.message || 'Failed to parse PDF');
+  }
+  parseBtn.disabled = false;
+}
+
+/* ═══════════════════════════════
+   TOOLTIP
+═══════════════════════════════ */
+const tooltip = document.getElementById('tooltip');
+let tooltipVisible = false;
+
+function showTooltip(ev, x, y) {
+  let h = '';
+  h += `<div class="tt-room">${ev.room}</div>`;
+  h += `<div class="tt-time">${fmtRange(ev.startH, ev.endH)}</div>`;
+  h += `<div class="tt-name">${ev.name}</div>`;
+  if (ev.hasTech) h += `<div class="tt-badge">⚙ TECH START ${fmtH(ev.startH - 0.5)}</div>`;
+
+  const tags = [];
+  ev.audio.forEach(a   => tags.push(`<span class="tt-tag g">🎙 ${a}</span>`));
+  ev.video.forEach(v   => tags.push(`<span class="tt-tag g">📽 ${v}</span>`));
+  ev.avLabor.forEach(l => tags.push(`<span class="tt-tag r">👤 ${l}</span>`));
+  ev.nontech.forEach(n => tags.push(`<span class="tt-tag b">🪑 ${n}</span>`));
+
+  if (tags.length) h += `<div style="margin-top:6px;line-height:1.8">${tags.join('')}</div>`;
+  else h += `<div class="tt-notech">No tech or ops needs</div>`;
+
+  tooltip.innerHTML = h;
+  positionTooltip(x, y);
+  tooltip.classList.add('show');
+  tooltipVisible = true;
+}
+
+function positionTooltip(x, y) {
+  tooltip.style.display = 'block';
+  const tw = tooltip.offsetWidth;
+  const th = tooltip.offsetHeight;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  let tx = x + 14;
+  let ty = y + 14;
+  if (tx + tw > vw - 10) tx = x - tw - 10;
+  if (ty + th > vh - 10) ty = y - th - 10;
+  tooltip.style.left = tx + 'px';
+  tooltip.style.top  = ty + 'px';
+}
+
+function hideTooltip() {
+  tooltip.classList.remove('show');
+  tooltipVisible = false;
+}
+
+// Mobile: tap anywhere outside tooltip to dismiss
+document.addEventListener('touchstart', function(e) {
+  if (tooltipVisible && !tooltip.contains(e.target)) {
+    hideTooltip();
+  }
+}, { passive: true });
+
+/* ═══════════════════════════════
+   TIMELINE RENDER
+═══════════════════════════════ */
+function renderTimeline(events) {
+  const rooms = [...new Set(events.map(e => e.room))];
+  const rowsEl = document.getElementById('tl-rows');
+  rowsEl.innerHTML = '';
+
+  rooms.forEach(room => {
+    const evs = events.filter(e => e.room === room);
+    const row = document.createElement('div');
+    row.className = 'tl-row';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'tl-rlabel';
+    lbl.textContent = room;
+    row.appendChild(lbl);
+
+    const cells = document.createElement('div');
+    cells.className = 'tl-cells';
+    for (let i = 0; i < TL_HOURS; i++) {
+      const c = document.createElement('div'); c.className = 'tl-cell'; cells.appendChild(c);
+    }
+
+    evs.forEach(ev => {
+      const s = Math.max(ev.startH, TL_START);
+      const e = Math.min(ev.endH, TL_START + TL_HOURS);
+      if (s >= e) return;
+
+      const el = document.createElement('div');
+      el.className = 'tl-evt ' + (ev.hasTech ? 'c-tech' : 'c-notech');
+      el.style.left  = tlLeft(s) + '%';
+      el.style.width = tlWidth(s, e) + '%';
+      el.textContent = ev.name;
+      el.dataset.hasTech    = (ev.hasTech || ev.avLabor.length > 0) ? '1' : '0';
+      el.dataset.hasNontech = ev.nontech.length > 0 ? '1' : '0';
+
+      el.addEventListener('mouseenter', evt => showTooltip(ev, evt.clientX, evt.clientY));
+      el.addEventListener('mousemove',  evt => { if (tooltipVisible) positionTooltip(evt.clientX, evt.clientY); });
+      el.addEventListener('mouseleave', hideTooltip);
+      // Mobile: tap to show tooltip
+      el.addEventListener('touchstart', evt => {
+        evt.stopPropagation();
+        const t = evt.touches[0];
+        showTooltip(ev, t.clientX, t.clientY);
+      }, { passive: true });
+
+      cells.appendChild(el);
+
+      // tech-start line — 30 min before
+      if (ev.hasTech) {
+        const tsH = ev.startH - 0.5;
+        if (tsH >= TL_START) {
+          const line = document.createElement('div');
+          line.className = 'tl-techline';
+          line.style.left = tlLeft(tsH) + '%';
+          line.title = 'Tech Start ' + fmtH(tsH);
+          cells.appendChild(line);
+        }
+      }
+    });
+
+    row.appendChild(cells);
+    rowsEl.appendChild(row);
+  });
+}
+
+/* ═══════════════════════════════
+   CARD RENDER
+═══════════════════════════════ */
+
+// Notes that are genuinely useful — setup, labor, equipment instructions
+function isUsefulNote(note) {
+  const n = note.trim().toLowerCase();
+  // Reject single-word or very short fragments that are just label noise
+  if (n.length < 6) return false;
+  // Reject known junk fragments
+  if (/^(reservation|layout|see diagram|diagram|notes?|instructions?|details?|information|comments?|setup|standard|event|room|date|time|type|status)$/i.test(n.trim())) return false;
+  // Must relate to actual setup, labor, or equipment action
+  const useful = /osves|set (and strike|up)|strike|standard setup|using standard|custom setup|crew|tech start|a1|a2|v1|v2|run of show|ros|load[- ]?in|load[- ]?out|rigging|patch|program|cue|advance|house (lights|sound|mix)|wireless|frequency|channel|mic (check|pack|plot)|production (manager|notes)|labor|lectern|staging|risers|chairs in|round(s)?|banquet|classroom|theater|chevron|hollow square|u-shape|crescent|reception style/i;
+  return useful.test(n);
+}
+
+function renderCards(events) {
+  const sorted = [...events].sort((a, b) => a.startH - b.startH || a.room.localeCompare(b.room));
+  const grid = document.getElementById('card-grid');
+  grid.innerHTML = '';
+
+  sorted.forEach((ev, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.animationDelay = (i * 0.018) + 's';
+
+    const hasTech    = ev.hasTech;
+    const hasNontech = ev.nontech.length > 0;
+    const hasLabor   = ev.avLabor.length > 0;
+    const hasFood    = ev.food.length > 0 || ev.hasFood;
+
+    // Store for view filtering
+    card.dataset.hasTech    = (hasTech || hasLabor) ? '1' : '0';
+    card.dataset.hasNontech = hasNontech ? '1' : '0';
+
+    const tsBadge = hasTech ? `<span class="ts-badge">⚙ TECH ${fmtH(ev.startH - 0.5)}</span>` : '';
+    const foodEmoji = hasFood ? `<span class="food-emoji" title="Food/beverage at this event">🍽</span>` : '';
+
+    let inner = `<div class="card-room"><span>${ev.room}</span>${tsBadge}</div>`;
+    inner += `<div class="evt">`;
+    inner += `<div class="evt-time">${fmtRange(ev.startH, ev.endH)}${foodEmoji}</div>`;
+    inner += `<div class="evt-name">${ev.name}</div>`;
+    // evt-type: only show if meaningfully different from name and not just a generic word
+    if (ev.type && ev.type.toLowerCase() !== ev.name.toLowerCase()
+        && !/^(main event|rehearsal|practice|meeting|meal|reception|planning|ready)$/i.test(ev.type)) {
+      inner += `<div class="evt-type">${ev.type}</div>`;
+    }
+
+    // TECHNICAL — audio & video (green)
+    const techItems = [...ev.audio, ...ev.video];
+    if (techItems.length) {
+      inner += `<div class="dept-lbl">Technical Equipment</div><div class="tags">`;
+      techItems.forEach(t => { inner += `<span class="tag tg">${t}</span>`; });
+      inner += `</div>`;
+    } else if (hasTech || hasLabor) {
+      // has tech needs but no specific equipment listed
+    } else {
+      inner += `<span class="no-needs-label">No Prod. Needs</span>`;
+    }
+
+    // AV LABOR (red)
+    if (hasLabor) {
+      inner += `<div class="dept-lbl">Labor</div><div class="tags">`;
+      ev.avLabor.forEach(l => { inner += `<span class="tag tr">${l}</span>`; });
+      inner += `</div>`;
+    }
+
+    // NON-TECHNICAL (blue)
+    if (hasNontech) {
+      inner += `<div class="dept-lbl">Non-Technical</div><div class="tags">`;
+      ev.nontech.forEach(n => { inner += `<span class="tag tb">${n}</span>`; });
+      inner += `</div>`;
+    } else {
+      inner += `<span class="no-needs-label">No Ops Needs</span>`;
+    }
+
+    // USEFUL SETUP / LABOR NOTES (filtered)
+    const usefulNotes = ev.notes.filter(isUsefulNote);
+    if (usefulNotes.length) {
+      inner += `<div class="side-notes">`;
+      usefulNotes.forEach(n => { inner += `<div class="side-note">${n}</div>`; });
+      inner += `</div>`;
+    }
+
+    inner += `</div>`; // .evt
+    card.innerHTML = inner;
+    grid.appendChild(card);
+  });
+
+  filterCards();
+}
+
+/* ═══════════════════════════════
+   NOW LINE
+═══════════════════════════════ */
+function positionNowLine() {
+  const now = new Date();
+  const h = now.getHours() + now.getMinutes() / 60;
+  const line  = document.getElementById('now-line');
+  const label = document.getElementById('now-label');
+  if (h < TL_START || h >= TL_START + TL_HOURS) {
+    line.style.display  = 'none';
+    label.style.display = 'none';
+    return;
+  }
+  const grid = document.getElementById('tl-grid');
+  const cellsWidth = grid.offsetWidth - 150;
+  const px = 150 + (((h - TL_START) / TL_HOURS) * cellsWidth);
+  line.style.left  = px + 'px';
+  line.style.display = 'block';
+  // Format current time as h:mm AM/PM
+  let hrs = now.getHours(), mins = now.getMinutes();
+  const ampm = hrs >= 12 ? 'PM' : 'AM';
+  hrs = hrs % 12 || 12;
+  const timeStr = hrs + ':' + String(mins).padStart(2,'0') + ' ' + ampm;
+  label.style.left = px + 'px';
+  label.textContent = timeStr;
+  label.style.display = 'block';
+  // Add pulsating ball if not already present
+  if (!document.getElementById('now-ball')) {
+    const ball = document.createElement('div');
+    ball.id = 'now-ball';
+    ball.className = 'now-ball';
+    line.appendChild(ball);
+  }
+}
+setInterval(positionNowLine, 30000);
+window.addEventListener('resize', positionNowLine);
+</script>
+</body>
+</html>
